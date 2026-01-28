@@ -1,6 +1,8 @@
 package com.example.demo.services;
 
+import com.example.demo.models.Booking;
 import com.example.demo.models.Review;
+import com.example.demo.repositories.BookingRepository;
 import com.example.demo.repositories.ReviewRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
@@ -14,10 +16,13 @@ import static java.util.Calendar.DATE;
 public class ReviewService implements CommandLineRunner
 {
     private ReviewRepository reviewRepository;
+    private BookingRepository bookingRepository;
 
-    public ReviewService(ReviewRepository reviewRepository) //constructor injection
+    public ReviewService(ReviewRepository reviewRepository,
+                         BookingRepository bookingRepository ) //constructor injection
     {
         this.reviewRepository = reviewRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     @Override
@@ -29,21 +34,24 @@ public class ReviewService implements CommandLineRunner
                 .rating(4)
                 .build();   // this code creates the plane java object that we want to store in the database
 
-//        System.out.println(r);
-        reviewRepository.save(r); // this code actully executes the sql query
-
-        Review r2 = Review.builder()
-                .content("Worse experience ever")
-                .rating(1)
+        Booking b = Booking
+                .builder()
+                .startTime(new Date())
+                .endTime(new Date())
+                .review(r)// passing the review object to the booking object so they can mapped together with forign key
                 .build();
-        List<Review> reviews = reviewRepository.findAll();
-        reviewRepository.save(r2);
 
-        for(Review review:reviews)
-        {
-            System.out.println(review.getContent());
-        }
-        reviewRepository.deleteById(2l);
+
+//        System.out.println(r);
+//        reviewRepository.save(r);// this code actully executes the sql query
+        bookingRepository.save(b);
+
+
+//        for(Review review:reviews)
+//        {
+//            System.out.println(review.getContent());
+//        }
+//        reviewRepository.deleteById(2l);
 
     }
 }
